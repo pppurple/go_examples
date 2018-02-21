@@ -1,2 +1,7 @@
 # Idea
 .idea
+
+# go
+bin/
+src/
+pkg/

@@ -1,4 +1,4 @@
-package fluent_logger_golang_example
+package main
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	logger, err := fluent.New(fluent.Config{})
+	logger, err := fluent.New(fluent.Config{FluentHost: "localhost", FluentPort: 24224})
 	if err != nil {
 		fmt.Println(err)
 	}

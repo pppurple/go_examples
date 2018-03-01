@@ -8,6 +8,7 @@ import (
 
 func main() {
 	logger, err := fluent.New(fluent.Config{FluentHost: "localhost", FluentPort: 24224})
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -23,6 +24,6 @@ func main() {
 	error := logger.Post(tag, data)
 
 	if error != nil {
-		panic(error)
+		fmt.Println(error)
 	}
 }

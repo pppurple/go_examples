@@ -82,5 +82,4 @@ func loop() {
 	for k, v := range m {
 		fmt.Printf("%d => %s\n", k, v)
 	}
-
 }

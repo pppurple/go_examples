@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -10,6 +11,10 @@ func main() {
 	sender()
 
 	channelClose()
+
+	goroutineChannel()
+
+	loop()
 }
 
 func basic() {
@@ -69,4 +74,42 @@ func channelClose() {
 	i, ok = <-ch2
 	fmt.Println(i)
 	fmt.Println(ok)
+}
+
+func goroutineChannel() {
+	ch := make(chan int, 20)
+
+	go recieve("1st goroutine", ch)
+	go recieve("2nd goroutine", ch)
+	go recieve("3rd goroutine", ch)
+
+	i := 0
+	for i < 100 {
+		ch <- i
+		i++
+	}
+	close(ch)
+
+	time.Sleep(3 + time.Second)
+}
+
+func recieve(name string, ch <-chan int) {
+	for {
+		i, ok := <-ch
+		if ok == false {
+			break
+		}
+		fmt.Println(name, i)
+	}
+	fmt.Println(name + " is done.")
+}
+
+func loop() {
+	ch := make(chan int, 3)
+	ch <- 1
+	ch <- 2
+	ch <- 3
+	for i := range ch {
+		fmt.Println(i)
+	}
 }

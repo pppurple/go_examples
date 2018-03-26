@@ -14,7 +14,9 @@ func main() {
 
 	goroutineChannel()
 
-	loop()
+	//loop()
+
+	selectChannel()
 }
 
 func basic() {
@@ -111,5 +113,41 @@ func loop() {
 	ch <- 3
 	for i := range ch {
 		fmt.Println(i)
+	}
+}
+
+func selectChannel() {
+	ch1 := make(chan int, 1)
+	ch2 := make(chan int, 1)
+	ch3 := make(chan int, 1)
+
+	// ch1 -> ch2
+	go func() {
+		for {
+			i := <-ch1
+			ch2 <- (i * 2)
+		}
+	}()
+	// ch2 -> ch3
+	go func() {
+		for {
+			i := <-ch2
+			ch3 <- (i - 1)
+		}
+	}()
+
+	n := 1
+LOOP:
+	for {
+		select {
+		case ch1 <- n:
+			n++
+		case i := <-ch3:
+			fmt.Println("recieved", i)
+		default:
+			if n > 100 {
+				break LOOP
+			}
+		}
 	}
 }

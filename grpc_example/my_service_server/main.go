@@ -17,12 +17,24 @@ const (
 type server struct{}
 
 func (s *server) SearchByName(ctx context.Context, request *pb.SearchRequest) (*pb.SearchResponse, error) {
-	alice := pb.Person{Name: "alice", Age: 20, Country: pb.Person_AMERICA, Hobby: "tennis"}
+	fmt.Println("query=" + request.Query)
 
-	fmt.Println(alice)
-	return &pb.SearchResponse{People: nil}, nil
-	//people := []pb.Person{alice}
-	//return &pb.SearchResponse{People: people}, nil
+	// DBから検索していると想定
+	alice := pb.Person{
+		Name:    "Alice Wall",
+		Age:     20,
+		Country: pb.Person_JAPAN,
+		Hobby:   "tennis",
+	}
+	bobby := pb.Person{
+		Name:    "Bobby Wall",
+		Age:     33,
+		Country: pb.Person_CANADA,
+		Hobby:   "music",
+	}
+
+	people := []*pb.Person{&alice, &bobby}
+	return &pb.SearchResponse{People: people}, nil
 }
 
 func main() {
@@ -41,28 +53,3 @@ func main() {
 		fmt.Printf("failed to serve: %v", err)
 	}
 }
-
-/*
-type SearchResponse struct {
-	People []*Person `protobuf:"bytes,1,rep,name=people" json:"people,omitempty"`
-}
-
-func (m *SearchResponse) Reset()                    { *m = SearchResponse{} }
-func (m *SearchResponse) String() string            { return proto.CompactTextString(m) }
-func (*SearchResponse) ProtoMessage()               {}
-func (*SearchResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-func (m *SearchResponse) GetPeople() []*Person {
-	if m != nil {
-		return m.People
-	}
-	return nil
-}
-
-type Person struct {
-	Name    string         `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Age     int32          `protobuf:"varint,2,opt,name=age" json:"age,omitempty"`
-	Country Person_Country `protobuf:"varint,3,opt,name=country,enum=exampleGrpc.Person_Country" json:"country,omitempty"`
-	Hobby   string         `protobuf:"bytes,4,opt,name=hobby" json:"hobby,omitempty"`
-}
-*/

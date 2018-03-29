@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
+	"reflect"
 )
 
 func main() {
@@ -27,6 +29,14 @@ func main() {
 	methodAsFunc()
 
 	pointerTypeReciever()
+
+	sliceStruct()
+
+	mapStruct()
+
+	tag()
+
+	tagJson()
 }
 
 func typeMain() {
@@ -329,6 +339,13 @@ func (p P) Set(x, y int) {
 	p.Y = y
 }
 
+type PP struct{ X, Y int }
+
+func (p *PP) Set(x, y int) {
+	p.X = x
+	p.Y = y
+}
+
 func pointerTypeReciever() {
 	p1 := P{}
 	p1.Set(1, 2)
@@ -339,4 +356,85 @@ func pointerTypeReciever() {
 	p2.Set(3, 4)
 	fmt.Println(p2.X)
 	fmt.Println(p2.Y)
+
+	pp := PP{}
+	pp.Set(5, 6)
+	fmt.Println(pp.X)
+	fmt.Println(pp.Y)
+
+	pp2 := &PP{}
+	pp2.Set(7, 8)
+	fmt.Println(pp2.X)
+	fmt.Println(pp2.Y)
+}
+
+type PT struct{ X, Y int }
+type PTs []*PT
+
+func sliceStruct() {
+	ps := make([]PT, 5)
+	for _, p := range ps {
+		fmt.Println(p.X, p.Y)
+	}
+
+	pts := PTs{}
+	pts = append(pts, &PT{X: 1, Y: 2})
+	pts = append(pts, nil)
+	pts = append(pts, &PT{X: 4, Y: 7})
+	fmt.Println(pts.ToString())
+}
+
+func (pts PTs) ToString() string {
+	str := ""
+	for _, p := range pts {
+		if str != "" {
+			str += ":"
+		}
+		if p == nil {
+			str += "<nil>"
+		} else {
+			str += fmt.Sprintf("[%d,%d]", p.X, p.Y)
+		}
+	}
+	return str
+}
+
+func mapStruct() {
+	m1 := map[User]string{
+		{Name: "alice", Age: 10}: "America",
+		{Name: "bobby", Age: 20}: "Canada",
+	}
+	m2 := map[int]User{
+		1: {Name: "alice", Age: 10},
+		2: {Name: "bobby", Age: 20},
+	}
+	fmt.Println(m1)
+	fmt.Println(m2)
+}
+
+type Color struct {
+	Id   int    "color id"
+	Name string "color name"
+}
+
+func tag() {
+	c := Color{Id: 1, Name: "orange"}
+
+	t := reflect.TypeOf(c)
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		fmt.Println(f.Type, f.Name, f.Tag)
+	}
+}
+
+type Country struct {
+	Id         int    `json:"c_id"`
+	Name       string `json:"c_name"`
+	Population int    `json:"c_pop"`
+}
+
+func tagJson() {
+	c := Country{Id: 1, Name: "America", Population: 10000}
+	bs, _ := json.Marshal(c)
+	fmt.Println(string(bs))
 }

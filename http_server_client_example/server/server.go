@@ -12,11 +12,26 @@ func main() {
 }
 
 func handleGetHello(w http.ResponseWriter, req *http.Request) {
-	req.ParseForm()
-	params := ""
-	for k, v := range req.Form {
-		params += (k + "=" + strings.Join(v, ","))
-		params += ", "
+	// header
+	method := req.Method
+	fmt.Println("[method] " + method)
+	for k, v := range req.Header {
+		fmt.Print("[header] " + k)
+		fmt.Println(": " + strings.Join(v, ","))
 	}
-	fmt.Fprintf(w, "get request. params : %s", params)
+
+	// GET
+	if method == "GET" {
+		req.ParseForm()
+		for k, v := range req.Form {
+			fmt.Print("[param] " + k)
+			fmt.Println(": " + strings.Join(v, ","))
+		}
+		fmt.Fprint(w, "Recieve Get request!!")
+	}
+
+	// POST
+	if method == "POST" {
+
+	}
 }

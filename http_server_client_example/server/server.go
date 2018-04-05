@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -32,6 +35,13 @@ func handleGetHello(w http.ResponseWriter, req *http.Request) {
 
 	// POST
 	if method == "POST" {
-
+		defer req.Body.Close()
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("[request body row] " + string(body))
+		decoded, _ := url.Parse(string(body))
+		fmt.Println("[request body decode] ", decoded.Query())
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,11 +11,12 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/hello", handleGetHello)
+	http.HandleFunc("/dog", handleDog)
+	http.HandleFunc("/dog_json", handleDogJson)
 	http.ListenAndServe(":8080", nil)
 }
 
-func handleGetHello(w http.ResponseWriter, req *http.Request) {
+func handleDog(w http.ResponseWriter, req *http.Request) {
 	// header
 	method := req.Method
 	fmt.Println("[method] " + method)
@@ -33,7 +35,38 @@ func handleGetHello(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, "Recieve Get request!!")
 	}
 
-	// POST
+	// POST (form)
+	if method == "POST" {
+		defer req.Body.Close()
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("[request body row] " + string(body))
+		decoded, error := url.QueryUnescape(string(body))
+		if error != nil {
+			log.Fatal(error)
+		}
+		fmt.Println("[request body decoded] ", decoded)
+	}
+}
+
+type Dog struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func handleDogJson(w http.ResponseWriter, req *http.Request) {
+	// header
+	method := req.Method
+	fmt.Println("[method] " + method)
+	for k, v := range req.Header {
+		fmt.Print("[header] " + k)
+		fmt.Println(": " + strings.Join(v, ","))
+	}
+
+	// POST (json)
 	if method == "POST" {
 		defer req.Body.Close()
 		body, err := ioutil.ReadAll(req.Body)
@@ -41,7 +74,13 @@ func handleGetHello(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 		fmt.Println("[request body row] " + string(body))
-		decoded, _ := url.Parse(string(body))
-		fmt.Println("[request body decode] ", decoded.Query())
+
+		// Unmarshal
+		var dog Dog
+		error := json.Unmarshal(body, &dog)
+		if error != nil {
+			log.Fatal(error)
+		}
+		fmt.Printf("[request body decoded] %+v\n", dog)
 	}
 }

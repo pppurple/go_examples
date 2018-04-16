@@ -18,10 +18,13 @@ func main() {
 	// get current dir
 	// dir, err := os.Getwd()
 
-	var showDetail bool
-	flag.BoolVar(&showDetail, "l", false, "show list with more detail.")
+	// parse args option
 	var showVersion bool
 	flag.BoolVar(&showVersion, "v", false, "show version.")
+	var showDetail bool
+	flag.BoolVar(&showDetail, "l", false, "show list with more detail.")
+	flag.Parse()
+
 	if showVersion {
 		fmt.Println("version: " + version)
 		return
@@ -37,7 +40,15 @@ func main() {
 	if err != nil {
 		log.Fatal("Please input dir name:")
 	}
-	ls(fis)
+
+	if showDetail {
+		longFormat(fis)
+		return
+	} else {
+		ls(fis)
+		return
+	}
+
 	for _, fi := range fis {
 		fmt.Println(fi.Name())
 		fmt.Println(fi.Size())

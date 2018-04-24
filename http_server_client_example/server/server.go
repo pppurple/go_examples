@@ -32,7 +32,7 @@ func handleDog(w http.ResponseWriter, req *http.Request) {
 			fmt.Print("[param] " + k)
 			fmt.Println(": " + strings.Join(v, ","))
 		}
-		fmt.Fprint(w, "Recieve Get request!!")
+		fmt.Fprint(w, "Recieved Get request!!")
 	}
 
 	// POST (form)
@@ -49,6 +49,7 @@ func handleDog(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(error)
 		}
 		fmt.Println("[request body decoded] ", decoded)
+		fmt.Fprint(w, "Recieved Post(form) request!!")
 	}
 }
 
@@ -82,5 +83,6 @@ func handleDogJson(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(error)
 		}
 		fmt.Printf("[request body decoded] %+v\n", dog)
+		fmt.Fprint(w, "Recieved Post(json) request!!")
 	}
 }

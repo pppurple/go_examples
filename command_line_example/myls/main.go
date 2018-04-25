@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"strings"
+	"syscall"
 )
 
 // -l format long
@@ -71,8 +74,55 @@ func ls(fis []os.FileInfo) {
 }
 
 func longFormat(fis []os.FileInfo) {
+	var names []string
 	for _, fi := range fis {
+		names = append(names, fi.Name())
+	}
+	fillSpaces(names)
+
+	for _, fi := range fis {
+		var s syscall.Stat_t
+		syscall.Stat(fi.Name(), &s)
+		fmt.Printf("%v ", fi.Mode())
+		fmt.Printf("%v ", fi.Size())
+		fmt.Print(fi.ModTime())
+		fmt.Print(" ")
+		fmt.Print(s.Uid)
+		fmt.Print(" ")
+		fmt.Print(s.Gid)
+		fmt.Print(" ")
+		u, _ := user.LookupId(fmt.Sprintf("%v", s.Uid))
+		fmt.Print(u.Username)
+		fmt.Print(" ")
+		g, _ := user.LookupGroupId(fmt.Sprintf("%v", s.Gid))
+		fmt.Print(g.Name)
+		fmt.Print(" ")
 		fmt.Print(fi.Name() + " ")
 		fmt.Println("")
 	}
+}
+
+func fillSpaces(texts []string) {
+	var maxLength int
+	for _, text := range texts {
+		if maxLength < len(text) {
+			maxLength = len(text)
+		}
+	}
+
+	for _, text := range texts {
+		spaceSize := maxLength - len(text)
+		spaces := strings.Repeat(" ", spaceSize+1)
+		text = text + spaces
+		fmt.Println(":" + text + ":")
+	}
+}
+
+type StringFileInfo struct {
+	name        string
+	permission  string
+	size        string
+	user        string
+	group       string
+	modDateTime string
 }

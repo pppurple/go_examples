@@ -85,7 +85,10 @@ func longFormat(fis []os.FileInfo) {
 		syscall.Stat(fi.Name(), &s)
 		fmt.Printf("%v ", fi.Mode())
 		fmt.Printf("%v ", fi.Size())
-		fmt.Print(fi.ModTime())
+		modTime := fi.ModTime()
+		// fmt.Print(modTime.Month() + " " modTime.Day() + " " + modTime.Day())
+		// m d hh24:mi
+		fmt.Print(modTime.Format("1 2 15:04"))
 		fmt.Print(" ")
 		fmt.Print(s.Uid)
 		fmt.Print(" ")
@@ -99,9 +102,18 @@ func longFormat(fis []os.FileInfo) {
 		fmt.Print(" ")
 		fmt.Print(fi.Name() + " ")
 		fmt.Println("")
+
+		info := StringFileInfo{}
+		info.name = fi.Name()
+		info.permission = fmt.Sprintf("%v", fi.Mode())
+		info.size = fmt.Sprintf("%v", fi.Size())
+		info.user = u.Username
+		info.group = g.Name
+		info.modDateTime = modTime.Format("1 2 15:04")
 	}
 }
 
+// fill spaces for format
 func fillSpaces(texts []string) {
 	var maxLength int
 	for _, text := range texts {

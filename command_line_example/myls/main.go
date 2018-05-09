@@ -81,25 +81,38 @@ func longFormat(fis []os.FileInfo) {
 	fillSpaces(names)
 
 	for _, fi := range fis {
+		// TODO show file or directory
+		// if file, -
+		// if dir, d
+
+		// permission
+		fmt.Printf("%v ", fi.Mode())
+		fmt.Print(" ")
+
+		// user name, group name
+		// fmt.Print(s.Uid)
+		// fmt.Print(" ")
+		// fmt.Print(s.Gid)
+		// fmt.Print(" ")
 		var s syscall.Stat_t
 		syscall.Stat(fi.Name(), &s)
-		fmt.Printf("%v ", fi.Mode())
-		fmt.Printf("%v ", fi.Size())
-		modTime := fi.ModTime()
-		// fmt.Print(modTime.Month() + " " modTime.Day() + " " + modTime.Day())
-		// m d hh24:mi
-		fmt.Print(modTime.Format("1 2 15:04"))
-		fmt.Print(" ")
-		fmt.Print(s.Uid)
-		fmt.Print(" ")
-		fmt.Print(s.Gid)
-		fmt.Print(" ")
 		u, _ := user.LookupId(fmt.Sprintf("%v", s.Uid))
 		fmt.Print(u.Username)
 		fmt.Print(" ")
 		g, _ := user.LookupGroupId(fmt.Sprintf("%v", s.Gid))
 		fmt.Print(g.Name)
 		fmt.Print(" ")
+		fmt.Printf("%v ", fi.Size())
+		fmt.Print(" ")
+
+		// mod time
+		modTime := fi.ModTime()
+		// fmt.Print(modTime.Month() + " " modTime.Day() + " " + modTime.Day())
+		// m d hh24:mi
+		fmt.Print(modTime.Format("1 2 15:04"))
+		fmt.Print(" ")
+
+		// file name
 		fmt.Print(fi.Name() + " ")
 		fmt.Println("")
 

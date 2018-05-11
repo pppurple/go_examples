@@ -80,6 +80,8 @@ func longFormat(fis []os.FileInfo) {
 	}
 	fillSpaces(names)
 
+	var stringFileInfos []StringFileInfo
+
 	for _, fi := range fis {
 		// TODO show file or directory
 		// if file, -
@@ -87,7 +89,6 @@ func longFormat(fis []os.FileInfo) {
 
 		// permission
 		fmt.Printf("%v ", fi.Mode())
-		fmt.Print(" ")
 
 		// user name, group name
 		// fmt.Print(s.Uid)
@@ -123,6 +124,12 @@ func longFormat(fis []os.FileInfo) {
 		info.user = u.Username
 		info.group = g.Name
 		info.modDateTime = modTime.Format("1 2 15:04")
+		stringFileInfos = append(stringFileInfos, info)
+	}
+
+	fill(stringFileInfos)
+	for _, info := range stringFileInfos {
+		fmt.Printf("%s %s %s %s %s %s\n", info.permission, info.user, info.group, info.size, info.modDateTime, info.name)
 	}
 }
 
@@ -140,6 +147,67 @@ func fillSpaces(texts []string) {
 		spaces := strings.Repeat(" ", spaceSize+1)
 		text = text + spaces
 		fmt.Println(":" + text + ":")
+	}
+}
+
+func getMaxLength(texts []string) {
+
+}
+
+func fill(infos []StringFileInfo) {
+	var maxLengthName int
+	var maxLengthPerm int
+	var maxLengthSize int
+	var maxLengthUser int
+	var maxLengthGroup int
+	var maxLengthDate int
+	for _, info := range infos {
+		if maxLengthName < len(info.name) {
+			maxLengthName = len(info.name)
+		}
+		if maxLengthPerm < len(info.permission) {
+			maxLengthPerm = len(info.permission)
+		}
+		if maxLengthSize < len(info.size) {
+			maxLengthSize = len(info.size)
+		}
+		if maxLengthUser < len(info.user) {
+			maxLengthUser = len(info.user)
+		}
+		if maxLengthGroup < len(info.group) {
+			maxLengthGroup = len(info.group)
+		}
+		if maxLengthDate < len(info.modDateTime) {
+			maxLengthDate = len(info.modDateTime)
+		}
+	}
+	fmt.Println(maxLengthName)
+	fmt.Println(maxLengthPerm)
+	fmt.Println(maxLengthSize)
+	fmt.Println(maxLengthUser)
+	fmt.Println(maxLengthGroup)
+	fmt.Println(maxLengthDate)
+	var spaceSize int
+	for _, info := range infos {
+		// name
+		spaceSize = maxLengthName - len(info.name)
+		info.name = info.name + strings.Repeat(" ", spaceSize+1)
+		// permission
+		// spaceSize = maxLengthPerm - len(info.permission)
+		// info.permission = info.permission + strings.Repeat(" ", spaceSize+1)
+		// size
+		spaceSize = maxLengthSize - len(info.size)
+		info.size = info.size + strings.Repeat(" ", spaceSize+1)
+		fmt.Println(":" + info.size + ":")
+		// user name
+		spaceSize = maxLengthUser - len(info.user)
+		info.user = info.user + strings.Repeat(" ", spaceSize+1)
+		// group name
+		spaceSize = maxLengthGroup - len(info.group)
+		info.group = info.group + strings.Repeat(" ", spaceSize+1)
+		// mod date
+		spaceSize = maxLengthDate - len(info.modDateTime)
+		info.modDateTime = info.modDateTime + strings.Repeat(" ", spaceSize+1)
 	}
 }
 

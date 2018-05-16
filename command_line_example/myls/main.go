@@ -156,8 +156,6 @@ func getMaxLength(texts []string) {
 }
 
 func fill(infos []*StringFileInfo) {
-	fmt.Printf("len:%d\n", len(infos))
-	fmt.Printf("cap:%d\n", cap(infos))
 	var maxLengthName int
 	var maxLengthPerm int
 	var maxLengthSize int
@@ -184,30 +182,23 @@ func fill(infos []*StringFileInfo) {
 			maxLengthDate = len(info.modDateTime)
 		}
 	}
-	fmt.Println(maxLengthName)
-	fmt.Println(maxLengthPerm)
-	fmt.Println(maxLengthSize)
-	fmt.Println(maxLengthUser)
-	fmt.Println(maxLengthGroup)
-	fmt.Println(maxLengthDate)
 	var spaceSize int
 	for _, info := range infos {
 		// name
 		spaceSize = maxLengthName - len(info.name)
-		info.name = info.name + strings.Repeat(" ", spaceSize)
+		info.name += strings.Repeat(" ", spaceSize)
 		// size
 		spaceSize = maxLengthSize - len(info.size)
 		info.size += strings.Repeat(" ", spaceSize)
-		// info.size = info.size + strings.Repeat(" ", spaceSize+1)
 		// user name
 		spaceSize = maxLengthUser - len(info.user)
-		info.user = info.user + strings.Repeat(" ", spaceSize)
+		info.user += strings.Repeat(" ", spaceSize)
 		// group name
 		spaceSize = maxLengthGroup - len(info.group)
-		info.group = info.group + strings.Repeat(" ", spaceSize)
+		info.group += strings.Repeat(" ", spaceSize)
 		// mod date
 		spaceSize = maxLengthDate - len(info.modDateTime)
-		info.modDateTime = info.modDateTime + strings.Repeat(" ", spaceSize)
+		info.modDateTime += strings.Repeat(" ", spaceSize)
 	}
 }
 

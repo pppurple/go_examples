@@ -80,7 +80,8 @@ func longFormat(fis []os.FileInfo) {
 	}
 	fillSpaces(names)
 
-	var stringFileInfos []StringFileInfo
+	var stringFileInfos []*StringFileInfo
+	//stringFileInfos := make([]StringFileInfo, len(fis))
 
 	for _, fi := range fis {
 		// TODO show file or directory
@@ -124,7 +125,7 @@ func longFormat(fis []os.FileInfo) {
 		info.user = u.Username
 		info.group = g.Name
 		info.modDateTime = modTime.Format("1 2 15:04")
-		stringFileInfos = append(stringFileInfos, info)
+		stringFileInfos = append(stringFileInfos, &info)
 	}
 
 	fill(stringFileInfos)
@@ -154,7 +155,9 @@ func getMaxLength(texts []string) {
 
 }
 
-func fill(infos []StringFileInfo) {
+func fill(infos []*StringFileInfo) {
+	fmt.Printf("len:%d\n", len(infos))
+	fmt.Printf("cap:%d\n", cap(infos))
 	var maxLengthName int
 	var maxLengthPerm int
 	var maxLengthSize int
@@ -191,23 +194,20 @@ func fill(infos []StringFileInfo) {
 	for _, info := range infos {
 		// name
 		spaceSize = maxLengthName - len(info.name)
-		info.name = info.name + strings.Repeat(" ", spaceSize+1)
-		// permission
-		// spaceSize = maxLengthPerm - len(info.permission)
-		// info.permission = info.permission + strings.Repeat(" ", spaceSize+1)
+		info.name = info.name + strings.Repeat(" ", spaceSize)
 		// size
 		spaceSize = maxLengthSize - len(info.size)
-		info.size = info.size + strings.Repeat(" ", spaceSize+1)
-		fmt.Println(":" + info.size + ":")
+		info.size += strings.Repeat(" ", spaceSize)
+		// info.size = info.size + strings.Repeat(" ", spaceSize+1)
 		// user name
 		spaceSize = maxLengthUser - len(info.user)
-		info.user = info.user + strings.Repeat(" ", spaceSize+1)
+		info.user = info.user + strings.Repeat(" ", spaceSize)
 		// group name
 		spaceSize = maxLengthGroup - len(info.group)
-		info.group = info.group + strings.Repeat(" ", spaceSize+1)
+		info.group = info.group + strings.Repeat(" ", spaceSize)
 		// mod date
 		spaceSize = maxLengthDate - len(info.modDateTime)
-		info.modDateTime = info.modDateTime + strings.Repeat(" ", spaceSize+1)
+		info.modDateTime = info.modDateTime + strings.Repeat(" ", spaceSize)
 	}
 }
 

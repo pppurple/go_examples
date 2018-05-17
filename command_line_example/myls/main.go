@@ -14,9 +14,17 @@ import (
 // -a show all
 // -v version
 // -h help
-const version = "1.0"
+const (
+	version   = "1.0"
+	codeOk    = 0
+	codeError = 1
+)
 
 func main() {
+	os.Exit(executeCommand())
+}
+
+func executeCommand() int {
 	// get current dir
 	// dir, err := os.Getwd()
 
@@ -31,7 +39,7 @@ func main() {
 
 	if showVersion {
 		fmt.Println("version: " + version)
-		return
+		return codeOk
 	}
 
 	f, err := os.Open(".")
@@ -47,10 +55,11 @@ func main() {
 
 	if showDetail {
 		longFormat(fis, showAll)
-		return
+		return codeOk
 	}
 	ls(fis, showAll)
-	return
+	return codeOk
+
 }
 
 func ls(fis []os.FileInfo, showAll bool) {

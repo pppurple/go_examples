@@ -12,9 +12,8 @@ import (
 
 // -l format long
 // -a all
-// -t sort time
-// -r reverse
-// -h
+// -v version
+// -h help
 const version = "1.0"
 
 func main() {
@@ -26,6 +25,8 @@ func main() {
 	flag.BoolVar(&showVersion, "v", false, "show version.")
 	var showDetail bool
 	flag.BoolVar(&showDetail, "l", false, "show list with more detail.")
+	var showAll bool
+	flag.BoolVar(&showAll, "a", false, "show all files.")
 	flag.Parse()
 
 	if showVersion {
@@ -51,19 +52,6 @@ func main() {
 		ls(fis)
 		return
 	}
-
-	for _, fi := range fis {
-		fmt.Println(fi.Name())
-		fmt.Println(fi.Size())
-		fmt.Println(fi.Mode())
-		fmt.Println(fi.ModTime())
-		fmt.Println(fi.IsDir())
-		fmt.Println(fi.Sys())
-
-		if fi.IsDir() {
-			// fmt.Println(fi.Name())
-		}
-	}
 }
 
 func ls(fis []os.FileInfo) {
@@ -74,68 +62,48 @@ func ls(fis []os.FileInfo) {
 }
 
 func longFormat(fis []os.FileInfo) {
-	var names []string
-	for _, fi := range fis {
-		names = append(names, fi.Name())
-	}
-	fillSpaces(names)
+	/*
+		var names []string
+		for _, fi := range fis {
+			names = append(names, fi.Name())
+		}
+		fillSpaces(names)
+	*/
 
 	var stringFileInfos []*StringFileInfo
-	//stringFileInfos := make([]StringFileInfo, len(fis))
 
 	for _, fi := range fis {
-		// TODO show file or directory
-		// if file, -
-		// if dir, d
+		info := StringFileInfo{}
 
+		// file name
+		info.name = fi.Name()
 		// permission
-		fmt.Printf("%v ", fi.Mode())
-
-		// user name, group name
-		// fmt.Print(s.Uid)
-		// fmt.Print(" ")
-		// fmt.Print(s.Gid)
-		// fmt.Print(" ")
+		info.permission = fmt.Sprintf("%v", fi.Mode())
+		// file size
+		info.size = fmt.Sprintf("%v", fi.Size())
+		// user name
 		var s syscall.Stat_t
 		syscall.Stat(fi.Name(), &s)
 		u, _ := user.LookupId(fmt.Sprintf("%v", s.Uid))
-		fmt.Print(u.Username)
-		fmt.Print(" ")
+		info.user = u.Username
+		// group name
 		g, _ := user.LookupGroupId(fmt.Sprintf("%v", s.Gid))
-		fmt.Print(g.Name)
-		fmt.Print(" ")
-		fmt.Printf("%v ", fi.Size())
-		fmt.Print(" ")
-
+		info.group = g.Name
 		// mod time
 		modTime := fi.ModTime()
-		// fmt.Print(modTime.Month() + " " modTime.Day() + " " + modTime.Day())
-		// m d hh24:mi
-		fmt.Print(modTime.Format("1 2 15:04"))
-		fmt.Print(" ")
-
-		// file name
-		fmt.Print(fi.Name() + " ")
-		fmt.Println("")
-
-		info := StringFileInfo{}
-		info.name = fi.Name()
-		info.permission = fmt.Sprintf("%v", fi.Mode())
-		info.size = fmt.Sprintf("%v", fi.Size())
-		info.user = u.Username
-		info.group = g.Name
 		info.modDateTime = modTime.Format("1 2 15:04")
+
 		stringFileInfos = append(stringFileInfos, &info)
 	}
 
-	fill(stringFileInfos)
+	fillSpaces(stringFileInfos)
 	for _, info := range stringFileInfos {
 		fmt.Printf("%s %s %s %s %s %s\n", info.permission, info.user, info.group, info.size, info.modDateTime, info.name)
 	}
 }
 
 // fill spaces for format
-func fillSpaces(texts []string) {
+func fill(texts []string) {
 	var maxLength int
 	for _, text := range texts {
 		if maxLength < len(text) {
@@ -155,7 +123,8 @@ func getMaxLength(texts []string) {
 
 }
 
-func fill(infos []*StringFileInfo) {
+// fill spaces for format
+func fillSpaces(infos []*StringFileInfo) {
 	var maxLengthName int
 	var maxLengthPerm int
 	var maxLengthSize int

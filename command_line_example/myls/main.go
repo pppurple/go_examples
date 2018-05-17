@@ -11,7 +11,7 @@ import (
 )
 
 // -l format long
-// -a all
+// -a show all
 // -v version
 // -h help
 const version = "1.0"
@@ -46,37 +46,39 @@ func main() {
 	}
 
 	if showDetail {
-		longFormat(fis)
-		return
-	} else {
-		ls(fis)
+		longFormat(fis, showAll)
 		return
 	}
+	ls(fis, showAll)
+	return
 }
 
-func ls(fis []os.FileInfo) {
+func ls(fis []os.FileInfo, showAll bool) {
 	for _, fi := range fis {
-		fmt.Print(fi.Name() + " ")
+		filename := fi.Name()
+		if !showAll && strings.HasPrefix(filename, ".") {
+			// ignore dot files
+			continue
+		}
+		fmt.Print(filename + " ")
 	}
 	fmt.Println("")
 }
 
-func longFormat(fis []os.FileInfo) {
-	/*
-		var names []string
-		for _, fi := range fis {
-			names = append(names, fi.Name())
-		}
-		fillSpaces(names)
-	*/
-
-	var stringFileInfos []*StringFileInfo
+func longFormat(fis []os.FileInfo, showAll bool) {
+	var stringFileInfos []*stringFileInfo
 
 	for _, fi := range fis {
-		info := StringFileInfo{}
+		info := stringFileInfo{}
+
+		filename := fi.Name()
+		if !showAll && strings.HasPrefix(filename, ".") {
+			// ignore dot files
+			continue
+		}
 
 		// file name
-		info.name = fi.Name()
+		info.name = filename
 		// permission
 		info.permission = fmt.Sprintf("%v", fi.Mode())
 		// file size
@@ -103,28 +105,7 @@ func longFormat(fis []os.FileInfo) {
 }
 
 // fill spaces for format
-func fill(texts []string) {
-	var maxLength int
-	for _, text := range texts {
-		if maxLength < len(text) {
-			maxLength = len(text)
-		}
-	}
-
-	for _, text := range texts {
-		spaceSize := maxLength - len(text)
-		spaces := strings.Repeat(" ", spaceSize+1)
-		text = text + spaces
-		fmt.Println(":" + text + ":")
-	}
-}
-
-func getMaxLength(texts []string) {
-
-}
-
-// fill spaces for format
-func fillSpaces(infos []*StringFileInfo) {
+func fillSpaces(infos []*stringFileInfo) {
 	var maxLengthName int
 	var maxLengthPerm int
 	var maxLengthSize int
@@ -171,7 +152,7 @@ func fillSpaces(infos []*StringFileInfo) {
 	}
 }
 
-type StringFileInfo struct {
+type stringFileInfo struct {
 	name        string
 	permission  string
 	size        string

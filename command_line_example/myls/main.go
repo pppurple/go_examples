@@ -25,9 +25,6 @@ func main() {
 }
 
 func executeCommand() int {
-	// get current dir
-	// dir, err := os.Getwd()
-
 	// parse args option
 	var showVersion bool
 	flag.BoolVar(&showVersion, "v", false, "show version.")
@@ -42,15 +39,28 @@ func executeCommand() int {
 		return codeOk
 	}
 
-	f, err := os.Open(".")
+	// dir name
+	dirName := flag.Arg(0)
+	if dirName == "" {
+		dirName = "."
+	}
+
+	/*
+		files, err := ioutil.ReadDir("./")
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+
+	f, err := os.Open(dirName)
 	if err != nil {
-		log.Fatal("Please input dir name:")
+		log.Fatal("Cannot open dir. Please input correct dir name:")
 	}
 	defer f.Close()
 
 	fis, err := f.Readdir(0)
 	if err != nil {
-		log.Fatal("Please input dir name:")
+		log.Fatal("Cannot open dir. Please input correct dir name:")
 	}
 
 	if showDetail {
@@ -59,7 +69,6 @@ func executeCommand() int {
 	}
 	ls(fis, showAll)
 	return codeOk
-
 }
 
 func ls(fis []os.FileInfo, showAll bool) {

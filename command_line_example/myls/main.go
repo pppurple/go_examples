@@ -129,7 +129,9 @@ func fillSpaces(infos []*stringFileInfo) {
 	var maxLengthSize int
 	var maxLengthUser int
 	var maxLengthGroup int
-	var maxLengthDate int
+	var maxLengthMonth int
+	var maxLengthDay int
+	var maxLengthTime int
 	for _, info := range infos {
 		if maxLengthName < len(info.name) {
 			maxLengthName = len(info.name)
@@ -146,8 +148,16 @@ func fillSpaces(infos []*stringFileInfo) {
 		if maxLengthGroup < len(info.group) {
 			maxLengthGroup = len(info.group)
 		}
-		if maxLengthDate < len(info.modDateTime) {
-			maxLengthDate = len(info.modDateTime)
+		// split "M D hh:mi"
+		dateTime := strings.Split(info.modDateTime, " ")
+		if maxLengthMonth < len(dateTime[0]) {
+			maxLengthMonth = len(dateTime[0])
+		}
+		if maxLengthDay < len(dateTime[1]) {
+			maxLengthDay = len(dateTime[1])
+		}
+		if maxLengthTime < len(dateTime[2]) {
+			maxLengthTime = len(dateTime[2])
 		}
 	}
 	var spaceSize int
@@ -164,9 +174,14 @@ func fillSpaces(infos []*stringFileInfo) {
 		// group name
 		spaceSize = maxLengthGroup - len(info.group)
 		info.group += strings.Repeat(" ", spaceSize)
-		// mod date
-		spaceSize = maxLengthDate - len(info.modDateTime)
-		info.modDateTime += strings.Repeat(" ", spaceSize)
+		// mod date time (month + day + time)
+		dateTime := strings.Split(info.modDateTime, " ")
+		spaceSize = maxLengthMonth - len(dateTime[0]) // month
+		info.modDateTime = dateTime[0] + strings.Repeat(" ", spaceSize+1)
+		spaceSize = maxLengthDay - len(dateTime[1]) // day
+		info.modDateTime += dateTime[1] + strings.Repeat(" ", spaceSize+1)
+		spaceSize = maxLengthTime - len(dateTime[2]) // time
+		info.modDateTime += dateTime[2] + strings.Repeat(" ", spaceSize)
 	}
 }
 
